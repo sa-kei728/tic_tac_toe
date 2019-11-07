@@ -1,29 +1,43 @@
+use std::io::{stdout, Write};
 use crate::piece::Piece;
-use crate::operator::*;
+
+pub trait Player{
+    fn new(piece: Piece) -> Self;
+    fn select_matrix(&self, max_size: usize) -> (usize, usize);
+    fn get_piece_type(&self) -> Piece;
+}
 
 // create player trait better than struct
-pub struct Player {
-    operator_type: Operator,
+pub struct Human {
     piece_type: Piece,
 }
 
-impl Player {
+impl Player for Human{
     // Constructer
-    pub fn new(op: Operator, piece: Piece) -> Self {
-        Player{operator_type: op, piece_type: piece}
+    fn new(piece: Piece) -> Self {
+        Human{piece_type: piece}
     }
 
     // return Tuple(row, col, Piece)
-    pub fn select_matrix(&self, max_size: usize) -> (usize, usize) {
+    fn select_matrix(&self, max_size: usize) -> (usize, usize) {
         //input from stdin
-        println!("row:");
-        let row : usize = Player::read_stdin(max_size);
+        print!("row:");
+        stdout().flush().unwrap();
+        let row : usize = Human::read_stdin(max_size);
 
-        println!("col:");
-        let col : usize = Player::read_stdin(max_size);
+        print!("col:");
+        stdout().flush().unwrap();
+        let col : usize = Human::read_stdin(max_size);
         (row, col)
     }
+    
+    fn get_piece_type(&self) -> Piece {
+        let piece_type = self.piece_type.clone();
+        piece_type
+    }
+}
 
+impl Human {
     fn read_stdin(max_size: usize) -> usize {
         let select_area : usize = {
             let mut s = String::new();
@@ -34,12 +48,7 @@ impl Player {
             select_area
         }else{
             println!("out of range area! reinput please!");
-            Player::read_stdin(max_size)
+            Human::read_stdin(max_size)
         }
-    }
-
-    pub fn get_piece_type(&self) -> Piece {
-        let piece_type = self.piece_type.clone();
-        piece_type
     }
 }
